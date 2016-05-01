@@ -74,6 +74,7 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiplepictures);
         maxnumber = getIntent().getIntExtra("number", 0);
+
         initView();
         initData();
     }
@@ -150,6 +151,7 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
         tv_muph_dir = (TextView) findViewById(R.id.tv_muph_dir);
         tv_muph_dirnumber = (TextView) findViewById(R.id.tv_muph_dirnumber);
         rl_muph_popu.setOnClickListener(this);
+        tv_muph_right.setText("0/" + maxnumber + "张");
     }
 
     private void initpopuwindow() {
@@ -163,7 +165,7 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
         checkDIrPoPuWindow.setOnDirSelectdListener(new CheckDIrPoPuWindow.OnDirSelectdListener() {
             @Override
             public void onSelected(FolderBean folderBean) {
-                tv_muph_right.setText("选中0张");
+                tv_muph_right.setText("0/" + maxnumber + "张");
                 imageAdapter.cleanSelectedData();
                 mCurrentDir = new File(folderBean.getDir());
                 mImages = Arrays.asList(mCurrentDir.list());
@@ -172,7 +174,7 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
                 imageAdapter.setOnImageSelectedListener(new ImageAdapter.OnImageSelectedListener() {
                     @Override
                     public void selected(Set<String> mSelectImg) {
-                        tv_muph_right.setText("选中" + mSelectImg.size() + "张");
+                        tv_muph_right.setText(mSelectImg.size() + "/" + maxnumber + "张");
                     }
                 });
                 tv_muph_dir.setText(mCurrentDir.getName());
@@ -211,14 +213,14 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
         imageAdapter.setOnImageSelectedListener(new ImageAdapter.OnImageSelectedListener() {
             @Override
             public void selected(Set<String> mSelectImg) {
-                tv_muph_right.setText("选中" + mSelectImg.size() + "张");
+                tv_muph_right.setText(mSelectImg.size() + "/" + maxnumber + "张");
             }
         });
     }
 
     @Override
     public void onBackPressed() {
-        if (imageAdapter!=null){
+        if (imageAdapter != null) {
             imageAdapter.cleanSelectedData();
         }
         super.onBackPressed();

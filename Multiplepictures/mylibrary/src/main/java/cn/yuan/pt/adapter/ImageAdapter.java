@@ -36,7 +36,7 @@ public class ImageAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return mDatas.size();
+        return mDatas.size() + 1;
     }
 
     public void setOnImageSelectedListener(OnImageSelectedListener onImageSelectedListener) {
@@ -59,44 +59,49 @@ public class ImageAdapter extends BaseAdapter {
         } else {
             myHolder = (MyHolder) convertView.getTag();
         }
-        //重置状态
-        myHolder.imageView.setImageResource(R.drawable.pictures_no);
-        myHolder.imageButton.setImageResource(R.drawable.picture_unselected);
-        myHolder.imageView.setColorFilter(null);
-        //加载图片
-        Glide.with(parent.getContext()).load(dirPath + "/" + mDatas.get(position)).centerCrop().into(myHolder.imageView);
-        myHolder.imageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //已经被选择
-                if (mSelectImg.contains(dirPath + "/" + mDatas.get(position))) {
-                    mSelectImg.remove(dirPath + "/" + mDatas.get(position));
-                    myHolder.imageButton.setImageResource(R.drawable.picture_unselected);
-                    myHolder.imageView.setColorFilter(null);
-                    if (onImageSelectedListener != null) {
-                        onImageSelectedListener.selected(mSelectImg);
-                    }
-                } else {
-                    if (mSelectImg.size() == maxnumber) {
-                        Toast.makeText(parent.getContext(), "只能选择" + maxnumber + "张图片", Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    mSelectImg.add(dirPath + "/" + mDatas.get(position));
-                    myHolder.imageButton.setImageResource(R.drawable.pictures_selected);
-                    //设置滤镜效果颜色
-                    myHolder.imageView.setColorFilter(Color.parseColor("#77000000"));
-                    if (onImageSelectedListener != null) {
-                        onImageSelectedListener.selected(mSelectImg);
+        if (position == 0) {
+            Glide.with(parent.getContext()).load(R.drawable.image_camera).into(myHolder.imageView);
+        } else {
+            //重置状态
+            myHolder.imageView.setImageResource(R.drawable.pictures_no);
+            myHolder.imageButton.setImageResource(R.drawable.picture_unselected);
+            myHolder.imageView.setColorFilter(null);
+            //加载图片
+            Glide.with(parent.getContext()).load(dirPath + "/" + mDatas.get(position-1)).centerCrop().into(myHolder.imageView);
+            myHolder.imageButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //已经被选择
+                    if (mSelectImg.contains(dirPath + "/" + mDatas.get(position-1))) {
+                        mSelectImg.remove(dirPath + "/" + mDatas.get(position-1));
+                        myHolder.imageButton.setImageResource(R.drawable.picture_unselected);
+                        myHolder.imageView.setColorFilter(null);
+                        if (onImageSelectedListener != null) {
+                            onImageSelectedListener.selected(mSelectImg);
+                        }
+                    } else {
+                        if (mSelectImg.size() == maxnumber) {
+                            Toast.makeText(parent.getContext(), "只能选择" + maxnumber + "张图片", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        mSelectImg.add(dirPath + "/" + mDatas.get(position-1));
+                        myHolder.imageButton.setImageResource(R.drawable.pictures_selected);
+                        //设置滤镜效果颜色
+                        myHolder.imageView.setColorFilter(Color.parseColor("#77000000"));
+                        if (onImageSelectedListener != null) {
+                            onImageSelectedListener.selected(mSelectImg);
+                        }
                     }
                 }
+            });
+            //已经被选择
+            if (mSelectImg.contains(dirPath + "/" + mDatas.get(position-1))) {
+                myHolder.imageButton.setImageResource(R.drawable.pictures_selected);
+                //设置滤镜效果颜色
+                myHolder.imageView.setColorFilter(Color.parseColor("#77000000"));
             }
-        });
-        //已经被选择
-        if (mSelectImg.contains(dirPath + "/" + mDatas.get(position))) {
-            myHolder.imageButton.setImageResource(R.drawable.pictures_selected);
-            //设置滤镜效果颜色
-            myHolder.imageView.setColorFilter(Color.parseColor("#77000000"));
         }
+
         return convertView;
     }
 

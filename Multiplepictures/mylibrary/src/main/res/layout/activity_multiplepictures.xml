@@ -27,11 +27,21 @@
                 android:id="@+id/tv_muph_right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@+id/bt_check_ok"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/bt_check_ok"
+                android:layout_width="45dp"
+                android:layout_height="25dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
-                android:text="@string/app_name"
-                android:textColor="@android:color/white" />
+                android:background="@android:color/white"
+                android:text="确定"
+                android:textColor="#1E86ca" />
         </RelativeLayout>
     </android.support.v7.widget.Toolbar>
 

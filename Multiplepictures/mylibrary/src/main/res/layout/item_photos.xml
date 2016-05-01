@@ -7,8 +7,7 @@
         android:id="@+id/iv_item_image"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/pictures_no" />
+        android:scaleType="centerCrop" />
 
     <ImageButton
         android:id="@+id/ib_item_check"
