@@ -2,6 +2,7 @@ package cn.yuan.pt.activity;
 
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,7 +14,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -24,6 +27,7 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -54,6 +58,7 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
     private List<FolderBean> mFolderBean = new ArrayList<FolderBean>();//文件集合
     private ProgressDialog progressDialog;
     private static final int DATA_LOAD = 0x110;
+    private Set<String> checkImg = new HashSet<>();
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -68,13 +73,14 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
         }
     };
     private int maxnumber;
+    private ImageView iv_back;
+    private Button bt_check_ok;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiplepictures);
         maxnumber = getIntent().getIntExtra("number", 0);
-
         initView();
         initData();
     }
@@ -150,7 +156,11 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
         tv_muph_right = (TextView) findViewById(R.id.tv_muph_right);
         tv_muph_dir = (TextView) findViewById(R.id.tv_muph_dir);
         tv_muph_dirnumber = (TextView) findViewById(R.id.tv_muph_dirnumber);
+        iv_back = (ImageView) findViewById(R.id.iv_back);
+        bt_check_ok = (Button) findViewById(R.id.bt_check_ok);
+        bt_check_ok.setOnClickListener(this);
         rl_muph_popu.setOnClickListener(this);
+        iv_back.setOnClickListener(this);
         tv_muph_right.setText("0/" + maxnumber + "张");
     }
 
@@ -166,6 +176,8 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
             @Override
             public void onSelected(FolderBean folderBean) {
                 tv_muph_right.setText("0/" + maxnumber + "张");
+                bt_check_ok.setClickable(false);
+                bt_check_ok.setBackgroundColor(getResources().getColor(R.color.black_gray));
                 imageAdapter.cleanSelectedData();
                 mCurrentDir = new File(folderBean.getDir());
                 mImages = Arrays.asList(mCurrentDir.list());
@@ -174,6 +186,14 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
                 imageAdapter.setOnImageSelectedListener(new ImageAdapter.OnImageSelectedListener() {
                     @Override
                     public void selected(Set<String> mSelectImg) {
+                        if (mSelectImg.size() == 0) {
+                            bt_check_ok.setClickable(false);
+                            bt_check_ok.setBackgroundColor(getResources().getColor(R.color.black_gray));
+                        } else {
+                            bt_check_ok.setBackgroundColor(getResources().getColor(R.color.white));
+                            bt_check_ok.setClickable(true);
+                        }
+                        checkImg = mSelectImg;
                         tv_muph_right.setText(mSelectImg.size() + "/" + maxnumber + "张");
                     }
                 });
@@ -213,6 +233,14 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
         imageAdapter.setOnImageSelectedListener(new ImageAdapter.OnImageSelectedListener() {
             @Override
             public void selected(Set<String> mSelectImg) {
+                if (mSelectImg.size() == 0) {
+                    bt_check_ok.setClickable(false);
+                    bt_check_ok.setBackgroundColor(getResources().getColor(R.color.black_gray));
+                } else {
+                    bt_check_ok.setBackgroundColor(getResources().getColor(R.color.white));
+                    bt_check_ok.setClickable(true);
+                }
+                checkImg = mSelectImg;
                 tv_muph_right.setText(mSelectImg.size() + "/" + maxnumber + "张");
             }
         });
@@ -223,17 +251,34 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
         if (imageAdapter != null) {
             imageAdapter.cleanSelectedData();
         }
+        setResult(RESULT_CANCELED);
+        finish();
         super.onBackPressed();
     }
 
     @Override
     public void onClick(View v) {
         int i = v.getId();
+
         if (i == R.id.rl_muph_popu) {
             //展示popuwindow
             checkDIrPoPuWindow.showAsDropDown(rl_muph_popu);
             //内容背景变黑
             lightof();
+        } else if (i == R.id.iv_back) {
+            setResult(RESULT_CANCELED);
+            finish();
+        } else if (i == R.id.bt_check_ok) {
+            ArrayList<String> list = new ArrayList();
+            Iterator it = checkImg.iterator();
+            while (it.hasNext()) {
+                list.add((String) it.next());
+            }
+            // 返回已选择的图片数据
+            Intent data = new Intent();
+            data.putStringArrayListExtra("select_result", list);
+            setResult(RESULT_OK, data);
+            finish();
         }
     }
 }

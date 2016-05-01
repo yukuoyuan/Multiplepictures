@@ -13,6 +13,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <ImageView
+                android:id="@+id/iv_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/ic_back" />
+
             <TextView
                 android:id="@+id/tv_muph_title"
                 android:layout_width="wrap_content"
@@ -39,7 +47,8 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
-                android:background="@android:color/white"
+                android:background="@color/black_gray"
+                android:clickable="false"
                 android:text="确定"
                 android:textColor="#1E86ca" />
         </RelativeLayout>
