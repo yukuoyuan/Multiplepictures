@@ -60,7 +60,7 @@ public class ImageAdapter extends BaseAdapter {
             myHolder = (MyHolder) convertView.getTag();
         }
         if (position == 0) {
-            Glide.with(parent.getContext()).load(R.drawable.image_camera).into(myHolder.imageView);
+            Glide.with(parent.getContext()).load(R.drawable.camera).into(myHolder.imageView);
         } else {
             //重置状态
             myHolder.imageView.setImageResource(R.drawable.pictures_no);

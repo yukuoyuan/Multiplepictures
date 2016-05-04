@@ -1,6 +1,5 @@
 package cn.yuan.pt.activity;
 
-import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
@@ -56,7 +55,6 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
     private File mCurrentDir;
     private int mMaxCount;   //图片个数
     private List<FolderBean> mFolderBean = new ArrayList<FolderBean>();//文件集合
-    private ProgressDialog progressDialog;
     private static final int DATA_LOAD = 0x110;
     private Set<String> checkImg = new HashSet<>();
     private Handler handler = new Handler() {
@@ -86,7 +84,6 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
     }
 
     private void initData() {
-
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
             return;
