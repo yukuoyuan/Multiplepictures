@@ -278,4 +278,10 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
             finish();
         }
     }
+
+    @Override
+    public void finish() {
+        super.finish();
+        mFolderBean.clear();
+    }
 }
