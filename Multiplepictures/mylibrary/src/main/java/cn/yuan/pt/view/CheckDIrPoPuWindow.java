@@ -23,6 +23,7 @@ import cn.yuan.pt.utils.ScreenUtils;
 
 /**
  * Created by yukuo on 2016/5/1.
+ * 这是一个选择相册文件夹的弹窗
  */
 public class CheckDIrPoPuWindow extends PopupWindow {
     private int mWidth;

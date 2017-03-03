@@ -11,6 +11,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -33,6 +34,7 @@ import java.util.Set;
 import cn.yuan.pt.R;
 import cn.yuan.pt.adapter.ImageAdapter;
 import cn.yuan.pt.bean.FolderBean;
+import cn.yuan.pt.utils.FileUtis;
 import cn.yuan.pt.view.CheckDIrPoPuWindow;
 
 /**
@@ -73,6 +75,8 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
     private int maxnumber;
     private ImageView iv_back;
     private Button bt_check_ok;
+    private int PHOTO_REQUEST_TAKEPHOTO = 3;
+    private String cameraPath;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -84,6 +88,9 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
     }
 
     private void initData() {
+        /**
+         * 如果不存在内存卡的话弹出该提示
+         */
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
             return;
@@ -193,6 +200,19 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
                         checkImg = mSelectImg;
                         tv_muph_right.setText(mSelectImg.size() + "/" + maxnumber + "张");
                     }
+
+                    /**
+                     * 当相机选中后的事件监听
+                     */
+                    @Override
+                    public void onCameraClick() {
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        cameraPath = "/xiaoyu/" + System.currentTimeMillis() + ".jpg";
+                        FileUtis.createDir();
+                        File photoFile = new File(Environment.getExternalStorageDirectory(), cameraPath);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                        startActivityForResult(intent, PHOTO_REQUEST_TAKEPHOTO);
+                    }
                 });
                 tv_muph_dir.setText(mCurrentDir.getName());
                 tv_muph_dirnumber.setText(mMaxCount + "张");
@@ -200,6 +220,26 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
             }
         });
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == PHOTO_REQUEST_TAKEPHOTO) {
+                ArrayList<String> list = new ArrayList();
+                Log.d("图片的路径", Environment.getExternalStorageDirectory() + cameraPath);
+                list.add(Environment.getExternalStorageDirectory() + cameraPath);
+                // 返回已选择的图片数据
+                Intent data2 = new Intent();
+                data2.putStringArrayListExtra("select_result", list);
+                setResult(RESULT_OK, data);
+                if (imageAdapter != null) {
+                    imageAdapter.cleanSelectedData();
+                }
+                finish();
+            }
+        }
     }
 
     /**
@@ -217,6 +257,9 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
         getWindow().setAttributes(lp);
     }
 
+    /**
+     * 填充数据到界面上
+     */
     private void Data2View() {
         if (mCurrentDir == null) {
             Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
@@ -228,6 +271,7 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
         tv_muph_dir.setText(mCurrentDir.getName());
         tv_muph_dirnumber.setText(mMaxCount + "张");
         imageAdapter.setOnImageSelectedListener(new ImageAdapter.OnImageSelectedListener() {
+
             @Override
             public void selected(Set<String> mSelectImg) {
                 if (mSelectImg.size() == 0) {
@@ -239,6 +283,19 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
                 }
                 checkImg = mSelectImg;
                 tv_muph_right.setText(mSelectImg.size() + "/" + maxnumber + "张");
+            }
+
+            /**
+             * 当相机选中后的事件监听
+             */
+            @Override
+            public void onCameraClick() {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                cameraPath = "/xiaoyu/" + System.currentTimeMillis() + ".jpg";
+                FileUtis.createDir();
+                File photoFile = new File(Environment.getExternalStorageDirectory(), cameraPath);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                startActivityForResult(intent, PHOTO_REQUEST_TAKEPHOTO);
             }
         });
     }
@@ -275,6 +332,9 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
             Intent data = new Intent();
             data.putStringArrayListExtra("select_result", list);
             setResult(RESULT_OK, data);
+            if (imageAdapter != null) {
+                imageAdapter.cleanSelectedData();
+            }
             finish();
         }
     }

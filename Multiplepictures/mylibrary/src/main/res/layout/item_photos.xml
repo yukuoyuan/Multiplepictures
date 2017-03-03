@@ -11,6 +11,7 @@
         android:scaleType="centerCrop" />
 
     <ImageButton
+        android:padding="9dp"
         android:id="@+id/ib_item_check"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

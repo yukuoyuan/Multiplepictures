@@ -45,6 +45,8 @@ public class ImageAdapter extends BaseAdapter {
 
     public interface OnImageSelectedListener {
         void selected(Set<String> mSelectImg);
+
+        void onCameraClick();
     }
 
     @Override
@@ -61,19 +63,29 @@ public class ImageAdapter extends BaseAdapter {
         }
         if (position == 0) {
             Glide.with(parent.getContext()).load(R.drawable.camera).into(myHolder.imageView);
+            myHolder.imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (position == 0 && onImageSelectedListener != null) {
+                        onImageSelectedListener.onCameraClick();
+                    }
+                }
+            });
+
+
         } else {
             //重置状态
             myHolder.imageView.setImageResource(R.drawable.pictures_no);
             myHolder.imageButton.setImageResource(R.drawable.picture_unselected);
             myHolder.imageView.setColorFilter(null);
             //加载图片
-            Glide.with(parent.getContext()).load(dirPath + "/" + mDatas.get(position-1)).centerCrop().into(myHolder.imageView);
+            Glide.with(parent.getContext()).load(dirPath + "/" + mDatas.get(position - 1)).centerCrop().into(myHolder.imageView);
             myHolder.imageButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //已经被选择
-                    if (mSelectImg.contains(dirPath + "/" + mDatas.get(position-1))) {
-                        mSelectImg.remove(dirPath + "/" + mDatas.get(position-1));
+                    if (mSelectImg.contains(dirPath + "/" + mDatas.get(position - 1))) {
+                        mSelectImg.remove(dirPath + "/" + mDatas.get(position - 1));
                         myHolder.imageButton.setImageResource(R.drawable.picture_unselected);
                         myHolder.imageView.setColorFilter(null);
                         if (onImageSelectedListener != null) {
@@ -84,7 +96,7 @@ public class ImageAdapter extends BaseAdapter {
                             Toast.makeText(parent.getContext(), "只能选择" + maxnumber + "张图片", Toast.LENGTH_LONG).show();
                             return;
                         }
-                        mSelectImg.add(dirPath + "/" + mDatas.get(position-1));
+                        mSelectImg.add(dirPath + "/" + mDatas.get(position - 1));
                         myHolder.imageButton.setImageResource(R.drawable.pictures_selected);
                         //设置滤镜效果颜色
                         myHolder.imageView.setColorFilter(Color.parseColor("#77000000"));
@@ -95,7 +107,7 @@ public class ImageAdapter extends BaseAdapter {
                 }
             });
             //已经被选择
-            if (mSelectImg.contains(dirPath + "/" + mDatas.get(position-1))) {
+            if (mSelectImg.contains(dirPath + "/" + mDatas.get(position - 1))) {
                 myHolder.imageButton.setImageResource(R.drawable.pictures_selected);
                 //设置滤镜效果颜色
                 myHolder.imageView.setColorFilter(Color.parseColor("#77000000"));

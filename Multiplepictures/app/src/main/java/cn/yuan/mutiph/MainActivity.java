@@ -3,10 +3,10 @@ package cn.yuan.mutiph;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button bt_start_one = (Button) findViewById(R.id.bt_start_one);
         Button bt_start_more = (Button) findViewById(R.id.bt_start_more);
         iv_test = (ImageView) findViewById(R.id.iv_test);
+        Glide.with(this).load("/storage/emulated/0/xiaoyu/1488523582399.jpg").into(iv_test);
         bt_start_one.setOnClickListener(this);
         bt_start_more.setOnClickListener(this);
     }
@@ -37,7 +38,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (requestCode == 0x001) {
                 if (data != null) {
                     ArrayList<String> list = data.getStringArrayListExtra("select_result");
-                    Toast.makeText(MainActivity.this, list.size() + "", Toast.LENGTH_LONG).show();
+                    Log.d("图片的路径", list.get(0));
+                    //  Toast.makeText(MainActivity.this, list.size() + "", Toast.LENGTH_LONG).show();
                     Glide.with(MainActivity.this).load(list.get(0)).into(iv_test);
                 }
             }
