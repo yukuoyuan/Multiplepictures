@@ -227,16 +227,16 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == PHOTO_REQUEST_TAKEPHOTO) {
+                if (imageAdapter != null) {
+                    imageAdapter.cleanSelectedData();
+                }
                 ArrayList<String> list = new ArrayList();
                 Log.d("图片的路径", Environment.getExternalStorageDirectory() + cameraPath);
                 list.add(Environment.getExternalStorageDirectory() + cameraPath);
                 // 返回已选择的图片数据
                 Intent data2 = new Intent();
                 data2.putStringArrayListExtra("select_result", list);
-                setResult(RESULT_OK, data);
-                if (imageAdapter != null) {
-                    imageAdapter.cleanSelectedData();
-                }
+                setResult(RESULT_OK, data2);
                 finish();
             }
         }
@@ -307,7 +307,6 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
         }
         setResult(RESULT_CANCELED);
         finish();
-        super.onBackPressed();
     }
 
     @Override
@@ -320,8 +319,7 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
             //内容背景变黑
             lightof();
         } else if (i == R.id.iv_back) {
-            setResult(RESULT_CANCELED);
-            finish();
+            onBackPressed();
         } else if (i == R.id.bt_check_ok) {
             ArrayList<String> list = new ArrayList();
             Iterator it = checkImg.iterator();

@@ -18,6 +18,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private Intent intent;
     private ImageView iv_test;
+    private String cameraPath;
+    private int PHOTO_REQUEST_TAKEPHOTO=3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,10 +28,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button bt_start_one = (Button) findViewById(R.id.bt_start_one);
         Button bt_start_more = (Button) findViewById(R.id.bt_start_more);
         iv_test = (ImageView) findViewById(R.id.iv_test);
-        Glide.with(this).load("/storage/emulated/0/xiaoyu/1488523582399.jpg").into(iv_test);
         bt_start_one.setOnClickListener(this);
         bt_start_more.setOnClickListener(this);
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -38,9 +40,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (requestCode == 0x001) {
                 if (data != null) {
                     ArrayList<String> list = data.getStringArrayListExtra("select_result");
-                    Log.d("图片的路径", list.get(0));
-                    //  Toast.makeText(MainActivity.this, list.size() + "", Toast.LENGTH_LONG).show();
+                    Log.d("图片的路径*****", list.get(0));
                     Glide.with(MainActivity.this).load(list.get(0)).into(iv_test);
+                    //  Toast.makeText(MainActivity.this, list.size() + "", Toast.LENGTH_LONG).show();
                 }
             }
         }
