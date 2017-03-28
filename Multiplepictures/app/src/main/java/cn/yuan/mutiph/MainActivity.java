@@ -2,24 +2,25 @@ package cn.yuan.mutiph;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-
 import java.util.ArrayList;
 
 import cn.yuan.pt.activity.MultiplePicturesActivity;
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Intent intent;
     private ImageView iv_test;
     private String cameraPath;
-    private int PHOTO_REQUEST_TAKEPHOTO=3;
+    private int PHOTO_REQUEST_TAKEPHOTO = 3;
+    private String imageFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +41,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (requestCode == 0x001) {
                 if (data != null) {
                     ArrayList<String> list = data.getStringArrayListExtra("select_result");
+                    //创建图片的存储路径
+                    imageFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/qiezzi/" + "headIcon.png";
                     Log.d("图片的路径*****", list.get(0));
-                    Glide.with(MainActivity.this).load(list.get(0)).into(iv_test);
+                    ImageUtils.saveBitmapFile(ImageUtils.decodeScaleImage(list.get(0), 480, 480));
+                    iv_test.setImageBitmap(ImageUtils.decodeScaleImage(list.get(0), 480, 480));
+//                    Glide.with(MainActivity.this).load(list.get(0)).centerCrop().into(iv_test);
                     //  Toast.makeText(MainActivity.this, list.size() + "", Toast.LENGTH_LONG).show();
                 }
             }
@@ -63,4 +68,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
+
+
 }
