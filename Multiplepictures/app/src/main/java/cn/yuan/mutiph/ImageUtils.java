@@ -1,10 +1,19 @@
 package cn.yuan.mutiph;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
+import android.os.Build;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
+import android.view.View;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -19,6 +28,7 @@ public class ImageUtils {
 
     public ImageUtils() {
     }
+
     /**
      * 这是一个保存bitmap为一个文件的方法
      *
@@ -141,7 +151,69 @@ public class ImageUtils {
     public static BitmapFactory.Options getBitmapOptions(String var0) {
         BitmapFactory.Options var1 = new BitmapFactory.Options();
         var1.inJustDecodeBounds = true;
+
         BitmapFactory.decodeFile(var0, var1);
         return var1;
     }
+
+    /**
+     * 得到bitmap位图, 传入View对象
+     */
+    public static Bitmap getBitmapByView(View view) {
+        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        view.draw(new Canvas(bitmap));
+        return bitmap;
+    }
+
+    private void setBlurBackground(Bitmap bitmap, View view, Activity activity) {
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 3, bitmap.getHeight() / 3, false);
+        Bitmap blurBitmap = getBlurBitmap(activity, scaledBitmap, 5);
+        view.setAlpha(0);
+        view.setBackgroundDrawable(new BitmapDrawable(blurBitmap));
+        //alphaAnim(view, 0, 1, animDuration);
+    }
+
+    public static Bitmap getBlurBitmap(Context context, Bitmap bitmap, int radius) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            return blurBitmap(context, bitmap, radius);
+        }
+        return bitmap;
+    }
+
+    /**
+     * android系统的模糊方法
+     *
+     * @param bitmap 要模糊的图片
+     * @param radius 模糊等级 >=0 && <=25
+     */
+    public static Bitmap blurBitmap(Context context, Bitmap bitmap, int radius) {
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            //Let's create an empty bitmap with the same size of the bitmap we want to blur
+            Bitmap outBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            //Instantiate a new Renderscript
+            RenderScript rs = RenderScript.create(context);
+            //Create an Intrinsic Blur Script using the Renderscript
+            ScriptIntrinsicBlur blurScript = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
+            //Create the Allocations (in/out) with the Renderscript and the in/out bitmaps
+            Allocation allIn = Allocation.createFromBitmap(rs, bitmap);
+            Allocation allOut = Allocation.createFromBitmap(rs, outBitmap);
+            //Set the radius of the blur
+            blurScript.setRadius(radius);
+            //Perform the Renderscript
+            blurScript.setInput(allIn);
+            blurScript.forEach(allOut);
+            //Copy the final bitmap created by the out Allocation to the outBitmap
+            allOut.copyTo(outBitmap);
+            //recycle the original bitmap
+            bitmap.recycle();
+            //After finishing everything, we destroy the Renderscript.
+            rs.destroy();
+            return outBitmap;
+        } else {
+            return bitmap;
+        }
+    }
+
+
 }
