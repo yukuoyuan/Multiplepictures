@@ -58,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     //   imageFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/qiezzi/" + "headIcon.png";
                     Log.d("图片的路径*****", list.get(0));
                     imgsAdapter.addData(list);
-
                 }
             }
         }
