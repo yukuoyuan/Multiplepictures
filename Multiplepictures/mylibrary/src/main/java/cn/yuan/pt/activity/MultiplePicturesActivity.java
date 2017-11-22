@@ -11,6 +11,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -35,6 +36,7 @@ import cn.yuan.pt.R;
 import cn.yuan.pt.adapter.ImageAdapter;
 import cn.yuan.pt.bean.FolderBean;
 import cn.yuan.pt.utils.FileUtis;
+import cn.yuan.pt.utils.SPUtil;
 import cn.yuan.pt.view.CheckDIrPoPuWindow;
 
 /**
@@ -209,6 +211,7 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         cameraPath = "/xiaoyu/" + System.currentTimeMillis() + ".jpg";
                         FileUtis.createDir();
+                        SPUtil.putString(MultiplePicturesActivity.this, "filepath", cameraPath);
                         File photoFile = new File(Environment.getExternalStorageDirectory(), cameraPath);
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
                         startActivityForResult(intent, PHOTO_REQUEST_TAKEPHOTO);
@@ -223,6 +226,19 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("cameraPath", cameraPath);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (TextUtils.isEmpty(cameraPath)) {
+            cameraPath = savedInstanceState.getString("cameraPath");
+        }
+    }
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
@@ -231,6 +247,7 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
                     imageAdapter.cleanSelectedData();
                 }
                 ArrayList<String> list = new ArrayList();
+             //   cameraPath = SPUtil.getString(MultiplePicturesActivity.this, "filepath", "");
                 Log.d("图片的路径", Environment.getExternalStorageDirectory() + cameraPath);
                 list.add(Environment.getExternalStorageDirectory() + cameraPath);
                 // 返回已选择的图片数据

@@ -15,7 +15,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="打开多选" />
-
+    <Button
+        android:id="@+id/bt_image_zip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="图片压缩示例" />
     <ImageView
         android:id="@+id/iv_test"
         android:layout_width="200dp"

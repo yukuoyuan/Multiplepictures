@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:fitsSystemWindows="true"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:background="#1E86ca">
+        android:background="@android:color/black">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -68,7 +68,7 @@
         android:id="@+id/rl_muph_popu"
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:background="#1E86CA">
+        android:background="@android:color/black">
 
         <TextView
             android:id="@+id/tv_muph_dir"

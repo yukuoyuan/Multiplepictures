@@ -71,10 +71,10 @@ public class ImageAdapter extends BaseAdapter {
                     }
                 }
             });
-
-
+            myHolder.imageButton.setVisibility(View.GONE);
         } else {
             //重置状态
+            myHolder.imageButton.setVisibility(View.VISIBLE);
             myHolder.imageView.setImageResource(R.drawable.pictures_no);
             myHolder.imageButton.setImageResource(R.drawable.picture_unselected);
             myHolder.imageView.setColorFilter(null);

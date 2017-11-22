@@ -2,7 +2,7 @@ package cn.yuan.pt.bean;
 
 /**
  * Created by yukuo on 2016/4/3.
- * 这是一个文件的尸体
+ * 这是一个文件的实体
  */
 public class FolderBean {
     /**

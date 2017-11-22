@@ -34,10 +34,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         Button bt_start_one = (Button) findViewById(R.id.bt_start_one);
         Button bt_start_more = (Button) findViewById(R.id.bt_start_more);
+        Button bt_image_zip = (Button) findViewById(R.id.bt_image_zip);
         iv_test = (ImageView) findViewById(R.id.iv_test);
         rcv_image_list = (RecyclerView) findViewById(R.id.rcv_image_list);
         bt_start_one.setOnClickListener(this);
         bt_start_more.setOnClickListener(this);
+        bt_image_zip.setOnClickListener(this);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 4);
         rcv_image_list.setLayoutManager(gridLayoutManager);
         imagelist.add("http://7xp26r.com1.z0.glb.clouddn.com/ic_add.png");
@@ -45,7 +47,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         imgsAdapter.setOnDeleteListener(this);
         rcv_image_list.setAdapter(imgsAdapter);
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -75,6 +76,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 intent = new Intent(this, MultiplePicturesActivity.class);
                 intent.putExtra("number", 6 - imagelist.size());
                 startActivityForResult(intent, 0x001);
+                break;
+            case R.id.bt_image_zip:
+                intent = new Intent(this, ImaeZipDemoActivity.class);
+                startActivity(intent);
                 break;
         }
     }
