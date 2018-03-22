@@ -1,5 +1,6 @@
 package cn.yuan.pt.activity;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
@@ -9,6 +10,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -23,6 +25,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.joker.annotation.PermissionsGranted;
+import com.joker.api.Permissions4M;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
@@ -35,8 +40,6 @@ import java.util.Set;
 import cn.yuan.pt.R;
 import cn.yuan.pt.adapter.ImageAdapter;
 import cn.yuan.pt.bean.FolderBean;
-import cn.yuan.pt.utils.FileUtis;
-import cn.yuan.pt.utils.SPUtil;
 import cn.yuan.pt.view.CheckDIrPoPuWindow;
 
 /**
@@ -79,6 +82,7 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
     private Button bt_check_ok;
     private int PHOTO_REQUEST_TAKEPHOTO = 3;
     private String cameraPath;
+    private static final int AUDIO_CODE = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -208,13 +212,9 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
                      */
                     @Override
                     public void onCameraClick() {
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        cameraPath = "/xiaoyu/" + System.currentTimeMillis() + ".jpg";
-                        FileUtis.createDir();
-                        SPUtil.putString(MultiplePicturesActivity.this, "filepath", cameraPath);
-                        File photoFile = new File(Environment.getExternalStorageDirectory(), cameraPath);
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
-                        startActivityForResult(intent, PHOTO_REQUEST_TAKEPHOTO);
+                        checkPermission();
+
+
                     }
                 });
                 tv_muph_dir.setText(mCurrentDir.getName());
@@ -222,6 +222,25 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
                 checkDIrPoPuWindow.dismiss();
             }
         });
+
+    }
+
+    private void checkPermission() {
+        Permissions4M.get(this)
+                // 是否强制弹出权限申请对话框，建议设置为 true，默认为 true
+                // .requestForce(true)
+                // 是否支持 5.0 权限申请，默认为 false
+                .requestUnderM(true)
+                // 权限，单权限申请仅只能填入一个
+                .requestPermissions(Manifest.permission.CAMERA)
+                // 权限码
+                .requestCodes(AUDIO_CODE)
+                // 如果需要使用 @PermissionNonRationale 注解的话，建议添加如下一行
+                // 返回的 intent 是跳转至**系统设置页面**
+                .requestPageType(Permissions4M.PageType.MANAGER_PAGE)
+                // 返回的 intent 是跳转至**手机管家页面**
+                .requestPageType(Permissions4M.PageType.ANDROID_SETTING_PAGE)
+                .request();
 
     }
 
@@ -238,6 +257,7 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
             cameraPath = savedInstanceState.getString("cameraPath");
         }
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -247,7 +267,7 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
                     imageAdapter.cleanSelectedData();
                 }
                 ArrayList<String> list = new ArrayList();
-             //   cameraPath = SPUtil.getString(MultiplePicturesActivity.this, "filepath", "");
+                //   cameraPath = SPUtil.getString(MultiplePicturesActivity.this, "filepath", "");
                 Log.d("图片的路径", Environment.getExternalStorageDirectory() + cameraPath);
                 list.add(Environment.getExternalStorageDirectory() + cameraPath);
                 // 返回已选择的图片数据
@@ -307,12 +327,14 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
              */
             @Override
             public void onCameraClick() {
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                cameraPath = "/xiaoyu/" + System.currentTimeMillis() + ".jpg";
-                FileUtis.createDir();
-                File photoFile = new File(Environment.getExternalStorageDirectory(), cameraPath);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
-                startActivityForResult(intent, PHOTO_REQUEST_TAKEPHOTO);
+                checkPermission();
+
+//                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//                cameraPath = "/xiaoyu/" + System.currentTimeMillis() + ".jpg";
+//                FileUtis.createDir();
+//                File photoFile = new File(Environment.getExternalStorageDirectory(), cameraPath);
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+//                startActivityForResult(intent, PHOTO_REQUEST_TAKEPHOTO);
             }
         });
     }
@@ -359,4 +381,31 @@ public class MultiplePicturesActivity extends AppCompatActivity implements View.
         super.finish();
         mFolderBean.clear();
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[]
+            grantResults) {
+        Permissions4M.onRequestPermissionsResult(this, requestCode, grantResults);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @PermissionsGranted({AUDIO_CODE})
+    public void granted(int code) {
+        switch (code) {
+            case AUDIO_CODE:
+                Intent intent = new Intent(this, CameraActivity.class);
+                startActivityForResult(intent, PHOTO_REQUEST_TAKEPHOTO);
+//                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//                cameraPath = "/xiaoyu/" + System.currentTimeMillis() + ".jpg";
+//                FileUtis.createDir();
+//                SPUtil.putString(MultiplePicturesActivity.this, "filepath", cameraPath);
+//                File photoFile = new File(Environment.getExternalStorageDirectory(), cameraPath);
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+//                startActivityForResult(intent, PHOTO_REQUEST_TAKEPHOTO);
+                break;
+            default:
+                break;
+        }
+    }
+
 }
